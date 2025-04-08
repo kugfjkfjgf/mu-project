@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جامعة المنصورة - البداية</title>
+  <!-- استخدام خط Tajawal -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* إعادة تعيين الأساسيات */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Tajawal', sans-serif;
+    }
+    /* فيديو الخلفية يغطي كامل الشاشة */
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+    /* طبقة الظل التي تعرض المحتوى */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .overlay.show {
+      opacity: 1;
+    }
+    h1 {
+      font-size: 4em;
+      margin-bottom: 20px;
+      color: #00c6ff;
+    }
+    .start-btn {
+      font-size: 1.5em;
+      padding: 15px 30px;
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .start-btn:hover {
+      background-color: #004a99;
+    }
+  </style>
+</head>
+<body>
+  <!-- فيديو الخلفية -->
+  <video class="video-background" autoplay muted loop>
+    <source src="background.mp4" type="video/mp4">
+    متصفحك لا يدعم الفيديو.
+  </video>
+  
+  <!-- المحتوى الظاهر (اسم الجامعة وزر "ابدأ الرحلة") -->
+  <div class="overlay" id="landingContent">
+    <h1>جامعة المنصورة</h1>
+    <button class="start-btn" onclick="redirectToMain()">ابدأ الرحلة</button>
+  </div>
+
+  <script>
+    // بعد ثانية واحدة، يظهر المحتوى بتأثير (fade in)
+    setTimeout(() => {
+      document.getElementById("landingContent").classList.add("show");
+    }, 1000);
+
+    // إعادة التوجيه إلى صفحة main بعد ثانية واحدة
+    function redirectToMain() {
+      setTimeout(() => {
+        window.location.href = "main.html";
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

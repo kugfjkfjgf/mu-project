@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>جامعة المنصورة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body, html { height: 100%; overflow: hidden; direction: rtl; }
+    video.background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: -1; }
+    .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; max-width: 500px; }
+    .university-name { font-size: 3rem; font-weight: 700; color: #00aaff; margin-bottom: 10px; text-shadow: 2px 2px 5px #000; }
+    .welcome-message { font-size: 1.4rem; margin-bottom: 30px; text-shadow: 1px 1px 3px #000; }
+    .buttons { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    button {
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .form {
+      margin-top: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .message {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+    .error {
+      background-color: rgba(255, 0, 0, 0.2);
+      color: #fff;
+      border: 1px solid #ff0000;
+    }
+    .success {
+      background-color: rgba(0, 255, 0, 0.2);
+      color: #fff;
+      border: 1px solid #00ff00;
+    }
+  </style>
+</head>
+<body>
+
+<video autoplay muted loop class="background">
+  <source src="background.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<div class="container">
+  <div class="university-name">جامعة المنصورة</div>
+  <div class="welcome-message">مرحبًا بك في بوابة الجامعة 🎓</div>
+
+  <div class="buttons">
+    <button onclick="showForm('login')">تسجيل دخول</button>
+    <button onclick="showForm('register')">إنشاء حساب</button>
+  </div>
+
+  <form id="registerForm" class="form">
+    <input type="text" id="registerUser" placeholder="اسم المستخدم" required>
+    <input type="password" id="registerPass" placeholder="كلمة السر" required>
+    <input type="password" id="confirmPass" placeholder="تأكيد كلمة السر" required>
+    <button type="button" onclick="register()">تأكيد</button>
+    <div id="registerMessage" class="message"></div>
+  </form>
+
+  <form id="loginForm" class="form">
+    <input type="text" id="loginUser" placeholder="اسم المستخدم">
+    <input type="password" id="loginPass" placeholder="كلمة السر">
+    <button type="button" onclick="login()">دخول</button>
+    <div id="loginMessage" class="message"></div>
+  </form>
+</div>
+
+<!-- استدعاء ملف إدارة المستخدمين -->
+<script src="js/users.js"></script>
+<script>
+  function showForm(type) {
+    document.getElementById("registerForm").style.display = type === "register" ? "flex" : "none";
+    document.getElementById("loginForm").style.display = type === "login" ? "flex" : "none";
+    
+    // إخفاء رسائل الخطأ عند التبديل بين النماذج
+    document.getElementById("loginMessage").style.display = "none";
+    document.getElementById("registerMessage").style.display = "none";
+  }
+
+  function login() {
+    // الحصول على بيانات المستخدم
+    const username = document.getElementById("loginUser").value;
+    const password = document.getElementById("loginPass").value;
+    
+    // التحقق من وجود قيم
+    if (!username || !password) {
+      showMessage("loginMessage", "يرجى إدخال اسم المستخدم وكلمة المرور", "error");
+      return;
+    }
+    
+    // التحقق من صحة بيانات تسجيل الدخول
+    const result = loginUser(username, password);
+    
+    if (result.success) {
+      showMessage("loginMessage", result.message, "success");
+      // الانتقال إلى صفحة start بعد ثانية واحدة
+      setTimeout(() => {
+        window.location.href = "start.html";
+      }, 1000);
+    } else {
+      showMessage("loginMessage", result.message, "error");
+    }
+  }
+
+  function register() {
+    // الحصول على بيانات التسجيل
+    const username = document.getElementById("registerUser").value;
+    const password = document.getElementById("registerPass").value;
+    const confirm = document.getElementById("confirmPass").value;
+    
+    // التحقق من وجود قيم
+    if (!username || !password || !confirm) {
+      showMessage("registerMessage", "يرجى ملء جميع الحقول", "error");
+      return;
+    }
+    
+    // التحقق من تطابق كلمتي المرور
+    if (password !== confirm) {
+      showMessage("registerMessage", "كلمتا المرور غير متطابقتين", "error");
+      return;
+    }
+    
+    // تسجيل المستخدم الجديد
+    const result = registerUser(username, password);
+    
+    if (result.success) {
+      showMessage("registerMessage", result.message, "success");
+      // مسح حقول النموذج
+      document.getElementById("registerUser").value = "";
+      document.getElementById("registerPass").value = "";
+      document.getElementById("confirmPass").value = "";
+      
+      // الانتقال إلى نموذج تسجيل الدخول بعد ثانيتين
+      setTimeout(() => {
+        showForm('login');
+      }, 2000);
+    } else {
+      showMessage("registerMessage", result.message, "error");
+    }
+  }
+
+  // دالة لعرض رسائل النجاح والخطأ
+  function showMessage(elementId, message, type) {
+    const messageElement = document.getElementById(elementId);
+    messageElement.textContent = message;
+    messageElement.className = "message " + type;
+    messageElement.style.display = "block";
+  }
+</script>
+
+</body>
+</html>
